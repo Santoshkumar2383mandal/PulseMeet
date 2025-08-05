@@ -8,17 +8,7 @@ import { connectDB } from "./lib/db.js";
 const app = express()
 const PORT = process.env.PORT;
 
-// app.get("/api/auth/login",(req,res)=>{
-//     res.send("Login ROute");
-// })
-
-// app.get("/api/auth/signup",(req,res)=>{
-//     res.send("Signup Route");
-// })
-
-// app.get("/api/auth/logout",(req,res)=>{
-//     res.send("Logout ROute");
-// })
+app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
