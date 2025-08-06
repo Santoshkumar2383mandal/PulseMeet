@@ -133,3 +133,64 @@ export async function logout(req,res) {
         message:"Logout successful"
     })
 }
+
+export async function onboard(req, res) {
+    try {
+        const userId = req.user._id; // from protectRoute middleware
+
+        // Extract required fields from request body
+        const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
+
+        // Check for missing fields
+        if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
+            return res.status(400).json({
+                message: "All fields are required",
+                missingFields: [
+                    !fullName && "fullName",
+                    !bio && "bio",
+                    !nativeLanguage && "nativeLanguage",
+                    !learningLanguage && "learningLanguage",
+                    !location && "location"
+                ].filter(Boolean) //  filter out undefined 
+            });
+        }
+
+        // Update user
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, // fixed typo: was UserId
+            {
+                ...req.body, // spread operator to get all fields from request body
+                isOnboarded: true // to indicate user has completed onboarding
+            },
+            { new: true }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        // Upsert user in Stream
+        try{
+            await upsertStreamUser({
+                id: updatedUser._id.toString(),
+                name: updatedUser.fullName,
+                image: updatedUser.profilePic || "",
+            });
+            console.log(`Stream user updated for ${updatedUser.fullName}`);
+        }catch(streamError){
+            console.log("Error while creating/updating Stream User", streamError.message);
+        }
+
+        res.status(200).json({
+            success: true,
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.log("Error in onboarding controller", error.message);
+        res.status(500).json({
+            message: "Internal Server Error"
+        });
+    }
+}
