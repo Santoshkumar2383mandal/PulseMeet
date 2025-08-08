@@ -1,34 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {Navigate, Route, Routes} from "react-router";
 
-function App() {
-  const [count, setCount] = useState(0)
+import HomePage from "./pages/HomePage.jsx";
+import SignUpPage from "./pages/SignUpPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import NotificationPage from "./pages/NotificationPage.jsx";
+import CallPage from "./pages/CallPage.jsx";
+import ChatPage from "./pages/ChatPage.jsx";
+import OnboardingPage from "./pages/OnboardingPage.jsx";
 
+import {Toaster} from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { axiosInstance } from "./lib/axios.js"; 
+import PageLoader from "./components/PageLoader.jsx";
+
+
+const App = () => {
+  //tanStack Query
+  const {data:authData, isLoading } = useQuery({
+    queryKey: ["authUser"],
+
+    queryFn : async () =>{
+      const res = await axiosInstance.get("/auth/me"); //base url : http://localhost:5001/api
+      // const data = await res.json();
+      return res.data;
+    },
+    retry:false, // make retry req false
+  })
+
+  const authUser = authData?.user
+  if(isLoading) return <PageLoader/>
+    // console.log(data);
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className='h-screen' data-theme="night">
+      <Routes>
+        <Route path="/" element={authUser ? <HomePage/> : <Navigate to="/login"/>}/>
+        <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to="/" />} />
+        <Route path="/login" element={!authUser ? <LoginPage/> : <Navigate to="/" />}/>
+        <Route path="/notifications" element={authUser ? <NotificationPage/> : <Navigate to="/login"/>}/>
+        <Route path="/call" element={authUser ? <CallPage/> : <Navigate to="/login"/>}/>
+        <Route path="/chat" element={authUser ? <ChatPage/> : <Navigate to="/login"/>}/>
+        <Route path="/onboarding" element={authUser ? <OnboardingPage/> : <Navigate to="/login"/>}/>
+      </Routes>
+    </div>
   )
 }
 
