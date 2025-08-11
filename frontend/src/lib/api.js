@@ -10,6 +10,11 @@ export const login = async (loginData) =>{
     return response.data;
 }
 
+export const logout = async () =>{
+    const response = await axiosInstance.post("/auth/logout");
+    return response.data;
+}
+
 export const getAuthUser = async () =>{
     const res = await axiosInstance.get("/auth/me");
     return res.data;
@@ -19,3 +24,23 @@ export const completeOnboarding = async (userData) =>{
     const response = await axiosInstance.post("/auth/onboarding",userData);
     return response.data;
 }
+
+export const getUserFriends = async () => {
+    const response = await axiosInstance.get("/users/friends");
+    return response.data.friends || []; // always return an array
+};
+  
+export const getRecommendedUsers = async () => {
+    const response = await axiosInstance.get("/users");
+    return response.data.recommondedUsers || [];
+};
+
+export async function getOutgoingFriendReqs() {
+    const response = await axiosInstance.get("/users/outgoing-friend-requests");
+    return response.data;
+  }
+
+  export async function sendFriendRequest(userId) {
+    const response = await axiosInstance.post(`/users/friend-request/${userId}`);
+    return response.data;
+  }
