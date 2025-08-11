@@ -1,8 +1,10 @@
 import { LoaderIcon } from "lucide-react";
-
+import { useThemeStore } from "../store/useThemeStore";
 const PageLoader = () => {
+  const {theme} = useThemeStore();
+  //change page loader same color as bg theme
   return (
-    <div className="min-h-screen flex items-center justify-center" data-theme="forest">
+    <div className="min-h-screen flex items-center justify-center" data-theme={theme}>
       <LoaderIcon className="animate-spin size-10 text-primary" />
     </div>
   );

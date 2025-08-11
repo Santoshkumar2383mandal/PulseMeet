@@ -12,11 +12,14 @@ import {Toaster} from "react-hot-toast";
 
 import PageLoader from "./components/PageLoader.jsx";
 import useAuthUser from "./hooks/useAuthUser.js";
+import { useThemeStore } from "./store/useThemeStore.js";
+import Layout from "./components/Layout.jsx";
 
 
 const App = () => {
   //tanStack Query
   const { isLoading,authUser } = useAuthUser();
+  const {theme} = useThemeStore();
 
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnboarded;
@@ -24,14 +27,16 @@ const App = () => {
   if(isLoading) return <PageLoader/>
 
   return (
-    <div className='h-screen' data-theme="night">
+    <div className='h-screen' data-theme={theme}>
        {/* Render Toaster once so all pages can use it */}
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         <Route path="/" 
         element={
           isAuthenticated  && isOnboarded ? ( 
-            <HomePage/>
+            <Layout showSidebar={true}>
+              <HomePage/>
+            </Layout>
           ) :(
             <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />
           )
