@@ -113,8 +113,13 @@ export async function acceptFriendRequest(req, res) {
             });
         }
 
+        // console.log("--- DEBUGGING FRIEND REQUEST ACCEPTANCE ---");
+        // console.log("Logged-in User ID (req.user._id):", req.user._id);
+        // console.log("Friend Request Recipient ID (friendRequest.recipient):", friendRequest.recipient);
+        // console.log("Are the IDs the same?", req.user._id.toString() === friendRequest.recipient.toString());
+
         // check if the current user is the recipient of the friend request
-        if(friendRequest.recipient.toString() !== req.user._id){
+        if(friendRequest.recipient.toString() !== req.user._id.toString()){ //**convert user id to string for comparison
             return res.status(403).json({
                 message: "You are not authorized to accept this friend request"
             });
