@@ -12,10 +12,13 @@ const app = express()
 const PORT = process.env.PORT;
 
 app.use(cors({
-    // origin:"http://localhost:5173",
-    origin:'https://pulse-meet-393t.vercel.app/', 
-    credentials: true //allow frontend to send cookies
-}));
+    origin: [
+      "http://localhost:5173",                // local dev
+      "https://pulse-meet-393t.vercel.app"    // production (NO slash at the end)
+    ],
+    credentials: true // allow frontend to send cookies
+  }));
+  
 app.use(express.json());
 app.use(cookieParser());
 
