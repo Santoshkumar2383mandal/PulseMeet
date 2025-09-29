@@ -2,7 +2,7 @@ import React from 'react'
 
 function FriendPage() {
   return (
-    <div>FriendPage url</div>
+    <div>FriendPage</div>
   )
 }
 
